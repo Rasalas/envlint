@@ -1,0 +1,24 @@
+# Binaries
+envlint
+*.exe
+dist/
+
+# Environment files (practice what we preach)
+.env
+.env.local
+.env.*.local
+!examples/.env
+
+# Private
+.private/
+.claude/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

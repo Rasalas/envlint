@@ -1,0 +1,7 @@
+- id: envlint
+  name: envlint
+  description: Validate .env files against .env.example
+  entry: envlint
+  language: golang
+  always_run: true
+  pass_filenames: false
