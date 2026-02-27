@@ -30,40 +30,21 @@ func Check(exampleEntries, envEntries []env.Entry, opts Options) Result {
 	result.SetTotalKeys(len(allKeys))
 
 	// Run all rules
-	for _, issue := range checkMissingKeys(example, actual, opts) {
-		result.AddIssue(issue)
-	}
+	result.addAll(checkMissingKeys(example, actual, opts))
 
+	extras := checkExtraKeys(example, actual, opts)
 	if opts.NoExtra {
-		for _, issue := range checkExtraKeys(example, actual, opts) {
-			issue.Severity = SeverityError
-			result.AddIssue(issue)
-		}
-	} else {
-		for _, issue := range checkExtraKeys(example, actual, opts) {
-			result.AddIssue(issue)
+		for i := range extras {
+			extras[i].Severity = SeverityError
 		}
 	}
+	result.addAll(extras)
 
-	for _, issue := range checkRequiredEmpty(example, actual, opts) {
-		result.AddIssue(issue)
-	}
-
-	for _, issue := range checkURLFormat(actual, opts) {
-		result.AddIssue(issue)
-	}
-
-	for _, issue := range checkPortFormat(actual, opts) {
-		result.AddIssue(issue)
-	}
-
-	for _, issue := range checkEmailFormat(actual, opts) {
-		result.AddIssue(issue)
-	}
-
-	for _, issue := range checkBooleanFormat(actual, opts) {
-		result.AddIssue(issue)
-	}
+	result.addAll(checkRequiredEmpty(example, actual, opts))
+	result.addAll(checkURLFormat(actual, opts))
+	result.addAll(checkPortFormat(actual, opts))
+	result.addAll(checkEmailFormat(actual, opts))
+	result.addAll(checkBooleanFormat(actual, opts))
 
 	return result
 }

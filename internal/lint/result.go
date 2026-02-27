@@ -28,6 +28,10 @@ func (r *Result) AddIssue(issue Issue) {
 	r.Issues = append(r.Issues, issue)
 }
 
+func (r *Result) addAll(issues []Issue) {
+	r.Issues = append(r.Issues, issues...)
+}
+
 // SetTotalKeys sets the total number of keys checked.
 func (r *Result) SetTotalKeys(n int) {
 	r.totalKeys = n

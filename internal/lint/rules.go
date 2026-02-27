@@ -2,6 +2,7 @@ package lint
 
 import (
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -16,7 +17,6 @@ func checkMissingKeys(example, actual map[string]env.Entry, opts Options) []Issu
 			continue
 		}
 		if _, ok := actual[key]; !ok {
-			sev := SeverityError
 			detail := ""
 			if ex.Required || ex.Value != "" || isExplicitlyRequired(key, opts) {
 				detail = "required"
@@ -24,7 +24,7 @@ func checkMissingKeys(example, actual map[string]env.Entry, opts Options) []Issu
 			issues = append(issues, Issue{
 				Rule:     "missing-key",
 				Key:      key,
-				Severity: sev,
+				Severity: SeverityError,
 				Detail:   detail,
 			})
 		}
@@ -204,11 +204,11 @@ func checkBooleanFormat(actual map[string]env.Entry, opts Options) []Issue {
 // isBooleanKey checks if a key name suggests a boolean value.
 func isBooleanKey(key string) bool {
 	upper := strings.ToUpper(key)
-	return containsCI(key, "ENABLED") ||
-		containsCI(key, "ACTIVE") ||
+	return strings.Contains(upper, "ENABLED") ||
+		strings.Contains(upper, "ACTIVE") ||
 		strings.HasPrefix(upper, "IS_") ||
-		containsCI(key, "DISABLE") ||
-		containsCI(key, "DEBUG")
+		strings.Contains(upper, "DISABLE") ||
+		strings.Contains(upper, "DEBUG")
 }
 
 func containsCI(s, substr string) bool {
@@ -216,19 +216,9 @@ func containsCI(s, substr string) bool {
 }
 
 func isIgnored(key string, opts Options) bool {
-	for _, k := range opts.IgnoreKeys {
-		if k == key {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(opts.IgnoreKeys, key)
 }
 
 func isExplicitlyRequired(key string, opts Options) bool {
-	for _, k := range opts.RequiredKeys {
-		if k == key {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(opts.RequiredKeys, key)
 }
